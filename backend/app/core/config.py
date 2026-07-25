@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     SUPABASE_BUCKET:str
 
 
+    OPENAI_API_KEY:str
+
+
 
 
     model_config = SettingsConfigDict(
