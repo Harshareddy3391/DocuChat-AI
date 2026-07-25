@@ -1,8 +1,8 @@
 from openai import OpenAI
 from app.core.config import settings
+from fastapi import HTTPException,status
 
-
-
+#create client openai
 client=OpenAI(
     api_key=settings.OPENAI_API_KEY
 )
