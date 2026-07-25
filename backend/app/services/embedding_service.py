@@ -23,17 +23,22 @@ def create_embeddings(chunks:list[str])->list[list[float]]:
     if not chunks:
         return []
 
-
-    response=client.embeddings.create(
-        model="text-embedding-3-small",
-        input=chunks
-    )
-
-
-    embeddings=[
-        item.embedding
-        for item in response.data
-        ]
+    try:
+        response=client.embeddings.create(
+            model="text-embedding-3-small",
+            input=chunks
+                 )
 
 
-    return embeddings
+        embeddings=[
+            item.embedding
+            for item in response.data
+                ]
+
+
+        return embeddings
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Embedding genaration failed:{str(e)}"
+            )
