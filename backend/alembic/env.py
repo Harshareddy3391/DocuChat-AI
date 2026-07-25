@@ -1,5 +1,7 @@
 from logging.config import fileConfig
-from app.models.user_model import User  #partally added.
+from app.models.user_model import User 
+from app.models.document_chunk import DocumentChunk
+ #partally added.
 
 
 from app.models.document_model import Document
