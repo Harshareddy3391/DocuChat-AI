@@ -1,16 +1,19 @@
 from fastapi import HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
-from app.services.chunk_service import create_chunks
-
 from app.models.document_model import Document
-from app.models.user_model import User 
-from app.services.pdf_services import extract_text
+from app.models.user_model import User
 
 from app.services.storage_service import (
     upload_pdf,
     delete_pdf
 )
+
+from app.services.pdf_services import extract_text
+from app.services.chunk_service import create_chunks
+from app.services.embedding_service import create_embeddings
+from app.services.vector_service import save_chunks
+
 
 def create_document(
     db: Session,
@@ -18,7 +21,8 @@ def create_document(
     current_user: User
 ):
     """
-    Upload PDF to Supabase Storage and save document metadata in PostgreSQL.
+    Upload PDF to Supabase Storage, extract text, generate embeddings,
+    store document metadata and save vectors in PostgreSQL.
     """
 
     # Upload PDF
@@ -32,6 +36,9 @@ def create_document(
 
     # Split text into chunks
     chunks = create_chunks(text)
+
+    # Generate embeddings
+    embeddings = create_embeddings(chunks)
 
     print("=" * 50)
     print(f"TOTAL CHUNKS : {len(chunks)}")
@@ -53,5 +60,13 @@ def create_document(
     db.add(document)
     db.commit()
     db.refresh(document)
+
+    # Save chunks and embeddings
+    save_chunks(
+        db=db,
+        document_id=document.id,
+        chunks=chunks,
+        embeddings=embeddings
+    )
 
     return document
