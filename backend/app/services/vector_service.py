@@ -3,7 +3,7 @@ from app.models.document_chunk import DocumentChunk
 
 
 
-def save_chunk(
+def save_chunks(
         db:Session,
         document_id:int,
         chunks:list[str],

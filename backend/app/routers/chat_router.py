@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.schemas.chat_schema import ChatRequest, ChatResponse
 from app.services.chat_services import chat_with_document
-from app.utils.jwt import get_current_user
+from app.dependencies.auth import get_current_user
 from app.models.user_model import User
 
 router = APIRouter(

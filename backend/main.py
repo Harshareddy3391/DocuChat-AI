@@ -4,6 +4,8 @@ from app.api.document import router as document_router
 from starlette.middleware.sessions import SessionMiddleware
 from app.core.config import settings
 from app.api.auth import router as auth_router
+
+from app.routers.chat_router import router as chat_router
 from app.api.user import router as user_router
 app=FastAPI(
     title=settings.APP_NAME,
@@ -20,6 +22,8 @@ app.add_middleware(
 )
 #document router
 app.include_router(document_router)
+#chat router
+app.include_router(chat_router)
 #include router
 app.include_router(auth_router)
 app.include_router(user_router)

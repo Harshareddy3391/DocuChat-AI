@@ -21,11 +21,8 @@ from app.dependencies.auth import get_current_user
 from app.models.user_model import User
 from app.schemas.document_schema import DocumentResponse
 
-from app.services.document_service import (
-    create_document,
-    delete_document
-)
-
+from app.services.document_service import create_document
+ 
 # Create router
 router = APIRouter(
     prefix="/documents",
