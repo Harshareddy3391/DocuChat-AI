@@ -2,6 +2,7 @@ from fastapi import HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.models.document_model import Document
+from app.models.document_chunk import DocumentChunk
 from app.models.user_model import User
 
 from app.services.storage_service import (
@@ -70,3 +71,38 @@ def create_document(
     )
 
     return document
+
+def delete_document(
+        db:Session,
+        document_id:int,
+        current_user:User
+):
+
+
+    """
+    delete document its chunks and the PDF from supabase storage.
+    """
+
+    document=(
+        db.query(Document).filter(Document.id == current_user.id).first()
+    )
+
+
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Document not founded"
+
+        )
+
+
+    #Delete document from supabase
+    delete_pdf(document.file_path)
+
+    #delete document metadata
+    db.delete(document)
+    db.commit()
+
+    return {
+        "message":"Document deleted successfully"
+    }
