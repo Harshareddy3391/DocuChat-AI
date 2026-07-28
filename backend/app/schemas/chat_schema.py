@@ -1,9 +1,10 @@
-from pydantic  import  BaseModel
+from pydantic import BaseModel
+
 
 class ChatRequest(BaseModel):
-    document_id:int
-    qustion:str
+    document_id: int
+    question: str
 
 
-class ChatResponce(BaseModel):
-    answer:str
+class ChatResponse(BaseModel):
+    answer: str
