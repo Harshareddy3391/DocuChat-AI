@@ -1,15 +1,12 @@
-import {BroweserRouter as Routes, Route, BrowserRouter } from  "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import  Login from "../pages/Login";
-import Dashboard from "../pages/Dashboard";
-
-import Upload from "../pages/Upload";
-
-import Documents from "../pages/Documents";
-
-import Chat from "../pages/Chat";
-import Profile from "../pages/Profile";
-import NotFound from "../pages/NotFound";
+import Login from "../pages/Login/Login";
+import Dashboard from "../pages/Dashboard/Dashboard";
+import Upload from "../pages/Upload/Upload";
+import Documents from "../pages/Documents/Documents"; // or Document if that's the filename
+import Chat from "../pages/Chat/Chat";
+import Profile from "../pages/Profile/Profile";
+import NotFound from "../pages/NotFound/NotFound";
 
 
 
