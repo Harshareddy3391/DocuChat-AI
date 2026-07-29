@@ -73,36 +73,42 @@ def create_document(
     return document
 
 def delete_document(
-        db:Session,
-        document_id:int,
-        current_user:User
+    db: Session,
+    document_id: int,
+    current_user: User
 ):
-
-
     """
-    delete document its chunks and the PDF from supabase storage.
+    Delete document, its chunks, and PDF from Supabase Storage.
     """
 
-    document=(
-        db.query(Document).filter(Document.id == current_user.id).first()
+    document = (
+        db.query(Document)
+        .filter(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        )
+        .first()
     )
-
 
     if not document:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Document not founded"
-
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found"
         )
 
-
-    #Delete document from supabase
+    # Delete PDF from Supabase Storage
     delete_pdf(document.file_path)
 
-    #delete document metadata
+    # Delete document chunks
+    db.query(DocumentChunk).filter(
+        DocumentChunk.document_id == document.id
+    ).delete()
+
+    # Delete document metadata
     db.delete(document)
+
     db.commit()
 
     return {
-        "message":"Document deleted successfully"
+        "message": "Document deleted successfully"
     }
