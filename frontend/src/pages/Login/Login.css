@@ -1,0 +1,30 @@
+.login-container{
+    background:#f8f9fa;
+}
+
+.login-left{
+    background:#0d6efd;
+    color:white;
+    padding:40px;
+}
+
+.hero-image{
+    width:350px;
+}
+
+.login-card{
+    width:420px;
+    background:white;
+    padding:40px;
+    border-radius:15px;
+}
+
+.google-btn{
+    border:1px solid #ddd;
+    padding:12px;
+    font-weight:600;
+}
+
+.google-btn:hover{
+    background:#f1f1f1;
+}
