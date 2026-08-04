@@ -13,7 +13,12 @@ API.interceptors.request.use((config) => {
     }
 
     return config;
+
 });
+
+/* ===========================
+   Upload Document
+=========================== */
 
 export const uploadDocument = async (
     formData,
@@ -27,9 +32,40 @@ export const uploadDocument = async (
             headers: {
                 "Content-Type": "multipart/form-data",
             },
-
             onUploadProgress,
         }
     );
 
 };
+
+/* ===========================
+   Get All Documents
+=========================== */
+
+export const getDocuments = async () => {
+
+    return API.get("/documents");
+
+};
+
+/* ===========================
+   Delete Document
+=========================== */
+
+export const deleteDocument = async (id) => {
+
+    return API.delete(`/documents/${id}`);
+
+};
+
+/* ===========================
+   Open / View Document
+=========================== */
+
+export const getDocument = async (id) => {
+
+    return API.get(`/documents/${id}`);
+
+};
+
+export default API;
