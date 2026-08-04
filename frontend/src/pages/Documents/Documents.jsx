@@ -1,5 +1,6 @@
 import "./Documents.css";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 
 import {
   FaSearch,
@@ -10,30 +11,84 @@ import {
   FaList,
 } from "react-icons/fa";
 
+import {
+  getDocuments,
+  deleteDocument,
+} from "../../services/documentService";
+
+import { toast } from "react-toastify";
+
 const Documents = () => {
 
   const [gridView, setGridView] = useState(true);
 
-  const documents = [
-    {
-      id: 1,
-      filename: "Resume.pdf",
-      size: "2.4 MB",
-      date: "Today",
-    },
-    {
-      id: 2,
-      filename: "Machine Learning.pdf",
-      size: "8.6 MB",
-      date: "Yesterday",
-    },
-    {
-      id: 3,
-      filename: "Python Notes.pdf",
-      size: "5.2 MB",
-      date: "02 Aug 2026",
-    },
-  ];
+  const [documents, setDocuments] = useState([]);
+
+  const [search, setSearch] = useState("");
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    fetchDocuments();
+
+  }, []);
+
+  const fetchDocuments = async () => {
+
+    try {
+
+      setLoading(true);
+
+      const response = await getDocuments();
+
+      setDocuments(response.data);
+
+    } catch (error) {
+
+      console.error(error);
+
+      toast.error("Failed to load documents.");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  const handleDelete = async (id) => {
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this document?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+
+      await deleteDocument(id);
+
+      toast.success("Document deleted successfully.");
+
+      fetchDocuments();
+
+    } catch (error) {
+
+      console.error(error);
+
+      toast.error("Failed to delete document.");
+
+    }
+
+  };
+
+  const filteredDocuments = documents.filter((doc) =>
+    doc.filename
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
 
@@ -50,14 +105,16 @@ const Documents = () => {
             <h1>Documents</h1>
 
             <p>
+
               Manage all your uploaded PDF documents.
+
             </p>
 
           </div>
 
         </div>
 
-        {/* Search */}
+        {/* Toolbar */}
 
         <div className="documents-toolbar">
 
@@ -68,6 +125,10 @@ const Documents = () => {
             <input
               type="text"
               placeholder="Search documents..."
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
             />
 
           </div>
@@ -78,70 +139,119 @@ const Documents = () => {
               className={gridView ? "active" : ""}
               onClick={() => setGridView(true)}
             >
+
               <FaThLarge />
+
             </button>
 
             <button
               className={!gridView ? "active" : ""}
               onClick={() => setGridView(false)}
             >
+
               <FaList />
+
             </button>
 
           </div>
 
         </div>
 
-        {/* Documents */}
+        {/* Loading */}
 
-        <div
-          className={
-            gridView
-              ? "documents-grid"
-              : "documents-list"
-          }
-        >
+        {loading ? (
 
-          {documents.map((doc) => (
+          <h3 style={{ textAlign: "center" }}>
 
-            <div
-              className="document-card"
-              key={doc.id}
-            >
+            Loading documents...
 
-              <FaFilePdf className="pdf-icon" />
+          </h3>
 
-              <h4>{doc.filename}</h4>
+        ) : filteredDocuments.length === 0 ? (
 
-              <p>Size : {doc.size}</p>
+          <h3 style={{ textAlign: "center" }}>
 
-              <p>Uploaded : {doc.date}</p>
+            No documents found.
 
-              <div className="document-actions">
+          </h3>
 
-                <button className="view-btn">
+        ) : (
 
-                  <FaEye />
+          <div
+            className={
+              gridView
+                ? "documents-grid"
+                : "documents-list"
+            }
+          >
 
-                  Open
+            {filteredDocuments.map((doc) => (
 
-                </button>
+              <div
+                className="document-card"
+                key={doc.id}
+              >
 
-                <button className="delete-btn">
+                <FaFilePdf className="pdf-icon" />
 
-                  <FaTrashAlt />
+                <h4>
 
-                  Delete
+                  {doc.filename}
 
-                </button>
+                </h4>
+
+                <p>
+
+                  Size : {doc.size || "N/A"}
+
+                </p>
+
+                <p>
+
+                  Uploaded :
+
+                  {" "}
+
+                  {doc.created_at
+                    ? new Date(
+                        doc.created_at
+                      ).toLocaleDateString()
+                    : "N/A"}
+
+                </p>
+
+                <div className="document-actions">
+
+                  <button className="view-btn">
+
+                    <FaEye />
+
+                    Open
+
+                  </button>
+
+                  <button
+                    className="delete-btn"
+                    onClick={() =>
+                      handleDelete(doc.id)
+                    }
+                  >
+
+                    <FaTrashAlt />
+
+                    Delete
+
+                  </button>
+
+                </div>
 
               </div>
 
-            </div>
+            ))}
 
-          ))}
+          </div>
 
-        </div>
+        )}
 
       </div>
 
