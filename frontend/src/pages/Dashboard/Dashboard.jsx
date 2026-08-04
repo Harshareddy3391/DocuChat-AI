@@ -1,4 +1,5 @@
 import "./Dashboard.css";
+import { useEffect, useState } from "react";
 
 import {
   FaFileAlt,
@@ -7,51 +8,68 @@ import {
   FaRobot,
   FaCloudUploadAlt,
   FaUserCircle,
-  FaBars
+  FaBars,
 } from "react-icons/fa";
+
+import {
+  getDashboardStats,
+  getRecentDocuments,
+} from "../../services/dashboardService";
 
 const Dashboard = () => {
 
-  const stats = [
+  const [stats, setStats] = useState([]);
+
+  const [documents, setDocuments] = useState([]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  const loadDashboard = async () => {
+    try {
+
+      const statsData = await getDashboardStats();
+
+      const documentsData = await getRecentDocuments();
+
+      setStats(statsData);
+
+      setDocuments(documentsData);
+
+    } catch (error) {
+
+      console.error("Dashboard Error:", error);
+
+    }
+  };
+
+  const defaultStats = [
     {
       title: "Documents",
-      value: "12",
-      icon: <FaFileAlt />
+      value: 0,
+      icon: <FaFileAlt />,
     },
     {
       title: "AI Chats",
-      value: "85",
-      icon: <FaComments />
+      value: 0,
+      icon: <FaComments />,
     },
     {
       title: "Storage",
-      value: "240 MB",
-      icon: <FaDatabase />
+      value: "0 MB",
+      icon: <FaDatabase />,
     },
     {
       title: "AI Responses",
-      value: "1,248",
-      icon: <FaRobot />
-    }
+      value: 0,
+      icon: <FaRobot />,
+    },
   ];
 
-  const documents = [
-    {
-      name: "Machine Learning.pdf",
-      date: "02 Aug 2026"
-    },
-    {
-      name: "Python Notes.pdf",
-      date: "30 Jul 2026"
-    },
-    {
-      name: "Resume.pdf",
-      date: "28 Jul 2026"
-    }
-  ];
+  const displayStats = stats.length ? stats : defaultStats;
 
   return (
-
     <div className="dashboard">
 
       {/* Sidebar */}
@@ -114,7 +132,7 @@ const Dashboard = () => {
 
         </nav>
 
-        {/* Welcome */}
+        {/* Welcome Card */}
 
         <section className="welcome-card">
 
@@ -144,7 +162,7 @@ const Dashboard = () => {
 
         <section className="stats-grid">
 
-          {stats.map((item, index) => (
+          {displayStats.map((item, index) => (
 
             <div
               className="stat-card"
@@ -175,7 +193,7 @@ const Dashboard = () => {
 
         </section>
 
-        {/* Bottom */}
+        {/* Bottom Section */}
 
         <section className="bottom-grid">
 
@@ -203,25 +221,42 @@ const Dashboard = () => {
 
               <tbody>
 
-                {documents.map((doc, index) => (
+                {documents.length > 0 ? (
 
-                  <tr key={index}>
+                  documents.map((doc) => (
 
-                    <td>
+                    <tr key={doc.id}>
 
-                      {doc.name}
+                      <td>
 
-                    </td>
+                        {doc.filename}
 
-                    <td>
+                      </td>
 
-                      {doc.date}
+                      <td>
 
+                        {new Date(doc.created_at).toLocaleDateString()}
+
+                      </td>
+
+                    </tr>
+
+                  ))
+
+                ) : (
+
+                  <tr>
+
+                    <td
+                      colSpan="2"
+                      style={{ textAlign: "center" }}
+                    >
+                      No documents found.
                     </td>
 
                   </tr>
 
-                ))}
+                )}
 
               </tbody>
 
@@ -264,9 +299,7 @@ const Dashboard = () => {
       </div>
 
     </div>
-
   );
-
 };
 
 export default Dashboard;
