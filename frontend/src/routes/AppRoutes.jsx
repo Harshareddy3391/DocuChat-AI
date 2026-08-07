@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AuthCallback from "../pages/AuthCallback/AuthCallback";
 
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
@@ -35,6 +36,10 @@ const AppRoutes = () => {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+    path="/auth/callback"
+    element={<AuthCallback />}
+/>
 
                 <Route
                     path="/upload"

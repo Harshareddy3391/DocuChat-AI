@@ -75,5 +75,5 @@ async def google_callback(
     )
 
     return RedirectResponse(
-        url=f"http://localhost:5173/auth/callback?token={access_tocken}"
-    )
+    url=f"{settings.FRONTEND_URL}/auth/callback?token={access_tocken}"
+)

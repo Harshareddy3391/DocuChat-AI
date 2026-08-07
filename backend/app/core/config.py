@@ -39,6 +39,7 @@ class Settings(BaseSettings):
 
 
     OPENAI_API_KEY:str
+    FRONTEND_URL: str
 
 
 
