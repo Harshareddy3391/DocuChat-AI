@@ -1,5 +1,7 @@
 import "./Profile.css";
 
+import { getProfile } from "../../services/profileService";
+
 import { useEffect, useState } from "react";
 
 import {
@@ -70,31 +72,19 @@ const Profile = () => {
 
       // Replace this with your backend API later
 
-      const userData = {
+      const response = await getProfile();
 
-        name: "Harsha Vardhan",
+setUser({
 
-        email: "harsha@gmail.com",
+    name: response.data.name,
 
-        picture: "",
+    email: response.data.email,
 
-        joined: "August 2026",
+    picture: response.data.picture,
 
-      };
+    joined: "Member",
 
-      const statsData = {
-
-        documents: 12,
-
-        chats: 84,
-
-        storage: "245 MB",
-
-      };
-
-      setUser(userData);
-
-      setStats(statsData);
+});
 
     }
 
