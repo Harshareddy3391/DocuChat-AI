@@ -1,7 +1,9 @@
 import "./Profile.css";
 
-import { getProfile } from "../../services/profileService";
-
+import {
+    getProfile,
+    getProfileStats,
+} from "../../services/profileService";
 import { useEffect, useState } from "react";
 
 import {
@@ -72,15 +74,16 @@ const Profile = () => {
 
       // Replace this with your backend API later
 
-      const response = await getProfile();
+      const statsResponse = await getProfileStats();
+      const profileResponse = await getProfile();
 
-setUser({
+      setUser({
 
-    name: response.data.name,
+        name: profileResponse.data.name,
 
-    email: response.data.email,
+        email: profileResponse.data.email,
 
-    picture: response.data.picture,
+    picture: profileResponse.data.picture,
 
     joined: "Member",
 
