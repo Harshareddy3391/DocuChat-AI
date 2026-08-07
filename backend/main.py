@@ -5,6 +5,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.core.config import settings
 from app.api.auth import router as auth_router
 
+from app.routers.dashboard import router as dashboard_user
+
 from app.routers.chat_router import router as chat_router
 from app.api.user import router as user_router
 app=FastAPI(
@@ -27,6 +29,7 @@ app.include_router(chat_router)
 #include router
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(dashboard_user)
 @app.get("/")
 def root():
     

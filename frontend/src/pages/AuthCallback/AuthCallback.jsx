@@ -18,30 +18,25 @@ const AuthCallback = () => {
 
         const tocken = params.get("token");
 
-        if (tocken) {
+if (!tocken) {
 
-            localStorage.setItem(
-                "access_token",
-                tocken
-            );
+    return;
 
-            toast.success(
-                "Login successful."
-            );
+}
 
-            navigate("/dashboard");
+localStorage.setItem(
+    "access_token",
+    tocken
+);
 
-        }
+toast.success(
+    "Login successful."
+);
 
-        else {
-
-            toast.error(
-                "Login failed."
-            );
-
-            navigate("/");
-
-        }
+navigate(
+    "/dashboard",
+    { replace: true }
+);
 
     }, [navigate]);
 
