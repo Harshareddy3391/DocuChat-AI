@@ -212,11 +212,11 @@ const Documents = () => {
 
                   {" "}
 
-                  {doc.created_at
-                    ? new Date(
-                        doc.created_at
-                      ).toLocaleDateString()
-                    : "N/A"}
+                {doc.uploaded_at
+  ? new Date(
+      doc.uploaded_at
+    ).toLocaleDateString()
+  : "N/A"}
 
                 </p>
 
