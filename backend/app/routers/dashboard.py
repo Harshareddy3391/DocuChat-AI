@@ -18,7 +18,7 @@ def get_dashboard_stats(
         current_user:User=Depends(get_current_user)
 ):
 
-    documents_count=db.query(Document).filter(Document.user_id == current_user).count()
+    documents_count=db.query(Document).filter(Document.user_id == current_user.id).count()
     return [
     {
         "title": "Documents",
@@ -37,3 +37,19 @@ def get_dashboard_stats(
         "value": 0
     }
 ]
+
+@router.get("/recent-documents")
+def get_recent_documents(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    documents = (
+        db.query(Document)
+        .filter(Document.user_id == current_user.id)
+        .order_by(Document.uploaded_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    return documents

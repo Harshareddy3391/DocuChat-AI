@@ -1,5 +1,6 @@
 import "./Dashboard.css";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   FaFileAlt,
@@ -22,6 +23,8 @@ const Dashboard = () => {
 
   const [documents, setDocuments] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     loadDashboard();
   }, []);
@@ -43,29 +46,29 @@ const Dashboard = () => {
 
     }
   };
+const defaultStats = [
+  {
+    title: "Documents",
+    value: 0,
+    icon: <FaFileAlt />,
+  },
+  {
+    title: "AI Chats",
+    value: 0,
+    icon: <FaComments />,
+  },
+  {
+    title: "Storage",
+    value: "0 MB",
+    icon: <FaDatabase />,
+  },
+  {
+    title: "AI Responses",
+    value: 0,
+    icon: <FaRobot />,
+  },
+];
 
-  const defaultStats = [
-    {
-      title: "Documents",
-      value: 0,
-      icon: <FaFileAlt />,
-    },
-    {
-      title: "AI Chats",
-      value: 0,
-      icon: <FaComments />,
-    },
-    {
-      title: "Storage",
-      value: "0 MB",
-      icon: <FaDatabase />,
-    },
-    {
-      title: "AI Responses",
-      value: 0,
-      icon: <FaRobot />,
-    },
-  ];
 
   const displayStats = stats.length ? stats : defaultStats;
 
@@ -84,29 +87,40 @@ const Dashboard = () => {
 
         </div>
 
-        <ul>
+       <ul>
 
-          <li className="active">
-            Dashboard
-          </li>
+  <li
+    className="active"
+    onClick={() => navigate("/dashboard")}
+  >
+    Dashboard
+  </li>
 
-          <li>
-            Upload
-          </li>
+  <li
+    onClick={() => navigate("/upload")}
+  >
+    Upload
+  </li>
 
-          <li>
-            Documents
-          </li>
+  <li
+    onClick={() => navigate("/documents")}
+  >
+    Documents
+  </li>
 
-          <li>
-            Chat
-          </li>
+  <li
+    onClick={() => navigate("/chat")}
+  >
+    Chat
+  </li>
 
-          <li>
-            Profile
-          </li>
+  <li
+    onClick={() => navigate("/profile")}
+  >
+    Profile
+  </li>
 
-        </ul>
+</ul>
 
       </aside>
 
@@ -124,11 +138,14 @@ const Dashboard = () => {
 
           </div>
 
-          <div className="profile">
+         <div
+  className="profile"
+  onClick={() => navigate("/profile")}
+>
 
-            <FaUserCircle size={35} />
+  <FaUserCircle size={35} />
 
-          </div>
+</div>
 
         </nav>
 
@@ -148,13 +165,13 @@ const Dashboard = () => {
 
           </div>
 
-          <button>
+          <button onClick={() => navigate("/upload")}>
 
-            <FaCloudUploadAlt />
+  <FaCloudUploadAlt />
 
-            Upload PDF
+  Upload PDF
 
-          </button>
+</button>
 
         </section>
 
@@ -235,7 +252,7 @@ const Dashboard = () => {
 
                       <td>
 
-                        {new Date(doc.created_at).toLocaleDateString()}
+                       {new Date(doc.uploaded_at).toLocaleDateString()}
 
                       </td>
 

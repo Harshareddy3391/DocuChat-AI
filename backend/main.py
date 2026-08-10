@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.document import router as document_router
 from starlette.middleware.sessions import SessionMiddleware
@@ -18,9 +19,21 @@ app=FastAPI(
 
 
 #session middleware (required for google auth)
+# Session middleware
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.JWT_SECRET_KEY
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 #document router
 app.include_router(document_router)
