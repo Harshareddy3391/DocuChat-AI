@@ -207,7 +207,7 @@ const Profile = () => {
 
         <div className="profile-stats">
 
-          <div className="stat-card">
+          <div className="j-card">
 
             <FaFilePdf className="stat-icon" />
 
