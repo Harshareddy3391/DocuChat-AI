@@ -20,8 +20,7 @@ from app.dependencies.auth import get_current_user
 
 from app.models.user_model import User
 from app.schemas.document_schema import DocumentResponse
-
-from app.services.document_service import create_document,delete_document
+from app.services.document_service import create_document,delete_document,get_documents
  
 # Create router
 router = APIRouter(
@@ -47,6 +46,26 @@ def upload_document(
     return create_document(
         db=db,
         file=file,
+        current_user=current_user
+    )
+
+
+
+
+@router.get(
+    "",
+    response_model=list[DocumentResponse]
+)
+def get_all_documents(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get all documents uploaded by the current user.
+    """
+
+    return get_documents(
+        db=db,
         current_user=current_user
     )
 

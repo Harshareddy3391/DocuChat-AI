@@ -84,6 +84,20 @@ const Documents = () => {
 
   };
 
+  const handleOpen = (doc) => {
+
+    if (!doc.file_path) {
+
+      toast.error("Document URL is not available.");
+
+      return;
+
+    }
+
+    window.open(doc.file_path, "_blank");
+
+  };
+
   const filteredDocuments = documents.filter((doc) =>
     doc.filename
       .toLowerCase()
@@ -105,9 +119,7 @@ const Documents = () => {
             <h1>Documents</h1>
 
             <p>
-
               Manage all your uploaded PDF documents.
-
             </p>
 
           </div>
@@ -162,17 +174,13 @@ const Documents = () => {
         {loading ? (
 
           <h3 style={{ textAlign: "center" }}>
-
             Loading documents...
-
           </h3>
 
         ) : filteredDocuments.length === 0 ? (
 
           <h3 style={{ textAlign: "center" }}>
-
             No documents found.
-
           </h3>
 
         ) : (
@@ -195,15 +203,11 @@ const Documents = () => {
                 <FaFilePdf className="pdf-icon" />
 
                 <h4>
-
                   {doc.filename}
-
                 </h4>
 
                 <p>
-
-                  Size : {doc.size || "N/A"}
-
+                  Size : {doc.file_size || "N/A"}
                 </p>
 
                 <p>
@@ -212,23 +216,30 @@ const Documents = () => {
 
                   {" "}
 
-                {doc.uploaded_at
-  ? new Date(
-      doc.uploaded_at
-    ).toLocaleDateString()
-  : "N/A"}
+                  {doc.uploaded_at
+                    ? new Date(
+                        doc.uploaded_at
+                      ).toLocaleDateString()
+                    : "N/A"}
 
                 </p>
 
                 <div className="document-actions">
 
-                  <button className="view-btn">
+                  {/* OPEN */}
+
+                  <button
+                    className="view-btn"
+                    onClick={() => handleOpen(doc)}
+                  >
 
                     <FaEye />
 
                     Open
 
                   </button>
+
+                  {/* DELETE */}
 
                   <button
                     className="delete-btn"

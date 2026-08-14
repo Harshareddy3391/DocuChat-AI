@@ -7,7 +7,7 @@ from app.utils.jwt import create_access_tocken
 def get_or_create_user(db: Session, google_user: GoogleUser) -> str:
     """
     Get an existing user or create a new user,
-    then return a JWT access token.
+    then return a JWT access tocken.
     """
 
     # Check whether the user exists
@@ -19,6 +19,7 @@ def get_or_create_user(db: Session, google_user: GoogleUser) -> str:
 
     # Create a new user if not found
     if user is None:
+
         user = User(
             google_id=google_user.google_id,
             name=google_user.name,
@@ -27,8 +28,16 @@ def get_or_create_user(db: Session, google_user: GoogleUser) -> str:
         )
 
         db.add(user)
-        db.commit()
-        db.refresh(user)
+
+    else:
+
+        # Update Google profile information
+        user.google_id = google_user.google_id
+        user.name = google_user.name
+        user.picture = google_user.picture
+
+    db.commit()
+    db.refresh(user)
 
     # Generate JWT for both existing and new users
     access_tocken = create_access_tocken(

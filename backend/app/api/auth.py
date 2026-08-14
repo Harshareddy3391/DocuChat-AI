@@ -18,7 +18,9 @@ router = APIRouter(
     tags=["Authentication"]
 )
 
+
 oauth = OAuth()
+
 
 oauth.register(
     name="google",
@@ -33,15 +35,12 @@ oauth.register(
 
 @router.get("/google/login")
 async def google_login(request: Request):
-    """
-    Redirect the user to Google's login page.
-    """
 
-    redirect_url = settings.GOOGLE_REDIRECT_URI
+    redirect_uri = settings.GOOGLE_REDIRECT_URI
 
     return await oauth.google.authorize_redirect(
         request,
-        redirect_url
+        redirect_uri
     )
 
 
@@ -64,9 +63,9 @@ async def google_callback(
 
     google_user = GoogleUser(
         google_id=user_info["sub"],
-        name=user_info["name"],
+        name=user_info.get("name", ""),
         email=user_info["email"],
-        picture=user_info["picture"]
+        picture=user_info.get("picture", "")
     )
 
     access_tocken = get_or_create_user(
@@ -75,5 +74,5 @@ async def google_callback(
     )
 
     return RedirectResponse(
-    url=f"{settings.FRONTEND_URL}/auth/callback?token={access_tocken}"
-)
+        url=f"{settings.FRONTEND_URL}/auth/callback?token={access_tocken}"
+    )

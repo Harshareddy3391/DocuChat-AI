@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import AuthCallback from "../pages/AuthCallback/AuthCallback";
 
 import Login from "../pages/Login/Login";
@@ -11,6 +12,7 @@ import NotFound from "../pages/NotFound/NotFound";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
+
 const AppRoutes = () => {
 
     return (
@@ -19,14 +21,29 @@ const AppRoutes = () => {
 
             <Routes>
 
-                {/* Public Route */}
+                {/* =========================
+                    PUBLIC ROUTE
+                ========================= */}
 
                 <Route
                     path="/"
                     element={<Login />}
                 />
 
-                {/* Protected Routes */}
+
+                {/* =========================
+                    AUTH CALLBACK
+                ========================= */}
+
+                <Route
+                    path="/auth/callback"
+                    element={<AuthCallback />}
+                />
+
+
+                {/* =========================
+                    PROTECTED ROUTES
+                ========================= */}
 
                 <Route
                     path="/dashboard"
@@ -36,10 +53,7 @@ const AppRoutes = () => {
                         </ProtectedRoute>
                     }
                 />
-                <Route
-    path="/auth/callback"
-    element={<AuthCallback />}
-/>
+
 
                 <Route
                     path="/upload"
@@ -50,6 +64,7 @@ const AppRoutes = () => {
                     }
                 />
 
+
                 <Route
                     path="/documents"
                     element={
@@ -58,6 +73,7 @@ const AppRoutes = () => {
                         </ProtectedRoute>
                     }
                 />
+
 
                 <Route
                     path="/chat"
@@ -68,6 +84,7 @@ const AppRoutes = () => {
                     }
                 />
 
+
                 <Route
                     path="/profile"
                     element={
@@ -77,7 +94,10 @@ const AppRoutes = () => {
                     }
                 />
 
-                {/* 404 */}
+
+                {/* =========================
+                    404
+                ========================= */}
 
                 <Route
                     path="*"
@@ -91,5 +111,6 @@ const AppRoutes = () => {
     );
 
 };
+
 
 export default AppRoutes;

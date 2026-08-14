@@ -112,3 +112,25 @@ def delete_document(
     return {
         "message": "Document deleted successfully"
     }
+
+
+
+
+def get_documents(
+    db: Session,
+    current_user: User
+):
+    """
+    Get all documents uploaded by the current user.
+    """
+
+    documents = (
+        db.query(Document)
+        .filter(
+            Document.user_id == current_user.id
+        )
+        .order_by(Document.uploaded_at.desc())
+        .all()
+    )
+
+    return documents

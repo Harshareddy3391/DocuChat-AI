@@ -6,6 +6,7 @@ class DocumentResponse(BaseModel):
     filename:str
     file_size:int
     uploaded_at:datetime
+    file_path: str
 
     class Config:
         from_attributes=True

@@ -18,10 +18,9 @@ import {
 } from "../../services/dashboardService";
 
 const Dashboard = () => {
-
   const [stats, setStats] = useState([]);
-
   const [documents, setDocuments] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -31,125 +30,119 @@ const Dashboard = () => {
 
   const loadDashboard = async () => {
     try {
-
       const statsData = await getDashboardStats();
-
       const documentsData = await getRecentDocuments();
 
       setStats(statsData);
-
       setDocuments(documentsData);
-
     } catch (error) {
-
       console.error("Dashboard Error:", error);
-
     }
   };
-const defaultStats = [
-  {
-    title: "Documents",
-    value: 0,
-    icon: <FaFileAlt />,
-  },
-  {
-    title: "AI Chats",
-    value: 0,
-    icon: <FaComments />,
-  },
-  {
-    title: "Storage",
-    value: "0 MB",
-    icon: <FaDatabase />,
-  },
-  {
-    title: "AI Responses",
-    value: 0,
-    icon: <FaRobot />,
-  },
-];
 
+  const defaultStats = [
+    {
+      title: "Documents",
+      value: 0,
+      icon: <FaFileAlt />,
+    },
+    {
+      title: "AI Chats",
+      value: 0,
+      icon: <FaComments />,
+    },
+    {
+      title: "Storage",
+      value: "0 MB",
+      icon: <FaDatabase />,
+    },
+    {
+      title: "AI Responses",
+      value: 0,
+      icon: <FaRobot />,
+    },
+  ];
 
   const displayStats = stats.length ? stats : defaultStats;
 
   return (
     <div className="dashboard">
 
-      {/* Sidebar */}
+      {/* ================= SIDEBAR ================= */}
 
-      <aside className="sidebar">
+      <aside
+  className={`sidebar ${
+    sidebarOpen ? "sidebar-open" : "sidebar-closed"
+  }`}
+>
 
         <div className="logo">
-
           <FaRobot />
-
           <span>DocuChat AI</span>
-
         </div>
 
-       <ul>
+        <ul>
 
-  <li
-    className="active"
-    onClick={() => navigate("/dashboard")}
-  >
-    Dashboard
-  </li>
+          <li
+            className="active"
+            onClick={() => navigate("/dashboard")}
+          >
+            Dashboard
+          </li>
 
-  <li
-    onClick={() => navigate("/upload")}
-  >
-    Upload
-  </li>
+          <li
+            onClick={() => navigate("/upload")}
+          >
+            Upload
+          </li>
 
-  <li
-    onClick={() => navigate("/documents")}
-  >
-    Documents
-  </li>
+          <li
+            onClick={() => navigate("/documents")}
+          >
+            Documents
+          </li>
 
-  <li
-    onClick={() => navigate("/chat")}
-  >
-    Chat
-  </li>
+          <li
+            onClick={() => navigate("/chat")}
+          >
+            Chat
+          </li>
 
-  <li
-    onClick={() => navigate("/profile")}
-  >
-    Profile
-  </li>
+          <li
+            onClick={() => navigate("/profile")}
+          >
+            Profile
+          </li>
 
-</ul>
+        </ul>
 
       </aside>
 
-      {/* Main */}
+      {/* ================= MAIN ================= */}
 
       <div className="main">
 
-        {/* Navbar */}
+        {/* ================= NAVBAR ================= */}
 
         <nav className="navbar">
 
-          <div className="menu">
-
-            <FaBars />
-
-          </div>
-
-         <div
-  className="profile"
-  onClick={() => navigate("/profile")}
+          <div
+  className="menu"
+  onClick={() => setSidebarOpen(!sidebarOpen)}
 >
-
-  <FaUserCircle size={35} />
-
+  <FaBars />
 </div>
+
+          <div
+            className="profile"
+            onClick={() => navigate("/profile")}
+          >
+            <FaUserCircle size={35} />
+          </div>
 
         </nav>
 
-        {/* Welcome Card */}
+        {/* ================= WELCOME CARD ================= */}
 
         <section className="welcome-card">
 
@@ -165,17 +158,16 @@ const defaultStats = [
 
           </div>
 
-          <button onClick={() => navigate("/upload")}>
-
-  <FaCloudUploadAlt />
-
-  Upload PDF
-
-</button>
+          <button
+            onClick={() => navigate("/upload")}
+          >
+            <FaCloudUploadAlt />
+            Upload PDF
+          </button>
 
         </section>
 
-        {/* Statistics */}
+        {/* ================= STATISTICS ================= */}
 
         <section className="stats-grid">
 
@@ -187,21 +179,15 @@ const defaultStats = [
             >
 
               <div className="icon">
-
                 {item.icon}
-
               </div>
 
               <h3>
-
                 {item.value}
-
               </h3>
 
               <p>
-
                 {item.title}
-
               </p>
 
             </div>
@@ -210,11 +196,11 @@ const defaultStats = [
 
         </section>
 
-        {/* Bottom Section */}
+        {/* ================= BOTTOM SECTION ================= */}
 
         <section className="bottom-grid">
 
-          {/* Recent Documents */}
+          {/* RECENT DOCUMENTS */}
 
           <div className="documents">
 
@@ -227,11 +213,8 @@ const defaultStats = [
               <thead>
 
                 <tr>
-
                   <th>Name</th>
-
                   <th>Date</th>
-
                 </tr>
 
               </thead>
@@ -245,15 +228,15 @@ const defaultStats = [
                     <tr key={doc.id}>
 
                       <td>
-
                         {doc.filename}
-
                       </td>
 
                       <td>
-
-                       {new Date(doc.uploaded_at).toLocaleDateString()}
-
+                        {doc.uploaded_at
+                          ? new Date(
+                              doc.uploaded_at
+                            ).toLocaleDateString()
+                          : "N/A"}
                       </td>
 
                     </tr>
@@ -281,7 +264,7 @@ const defaultStats = [
 
           </div>
 
-          {/* Activity */}
+          {/* RECENT ACTIVITY */}
 
           <div className="activity">
 

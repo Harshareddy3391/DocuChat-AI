@@ -10,8 +10,8 @@ import { BsFileEarmarkTextFill } from "react-icons/bs";
 
 const Login = () => {
   const handleGoogleLogin = () => {
-    window.location.href = "http://127.0.0.1:8000/auth/google/login";
-  };
+  window.location.href = "http://localhost:8000/auth/google/login";
+};
 
   return (
     <main className="container-fluid login-container">
