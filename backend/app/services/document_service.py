@@ -7,7 +7,8 @@ from app.models.user_model import User
 
 from app.services.storage_service import (
     upload_pdf,
-    delete_pdf
+    delete_pdf,
+    genarate_signed_url
 )
 
 from app.services.pdf_services import extract_text
@@ -52,11 +53,11 @@ def create_document(
 
     # Save document metadata
     document = Document(
-        filename=uploaded_file["filename"],
-        file_path=uploaded_file["storage_path"],
-        file_size=uploaded_file["file_size"],
-        user_id=current_user.id
-    )
+    filename=uploaded_file["filename"],
+    file_path=uploaded_file["storage_path"],
+    file_size=uploaded_file["file_size"],
+    user_id=current_user.id
+)
 
     db.add(document)
     db.commit()
@@ -69,6 +70,11 @@ def create_document(
         chunks=chunks,
         embeddings=embeddings
     )
+
+
+    document.file_path = genarate_signed_url(
+    document.file_path
+)
 
     return document
 
@@ -114,8 +120,6 @@ def delete_document(
     }
 
 
-
-
 def get_documents(
     db: Session,
     current_user: User
@@ -132,5 +136,11 @@ def get_documents(
         .order_by(Document.uploaded_at.desc())
         .all()
     )
+
+    for document in documents:
+
+        document.file_path = genarate_signed_url(
+            document.file_path
+        )
 
     return documents
