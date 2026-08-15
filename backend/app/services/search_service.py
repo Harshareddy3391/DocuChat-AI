@@ -1,41 +1,40 @@
-from sqlalchemy.orm import Session 
-from sqlalchemy import table
-
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from app.services.embedding_service import create_embeddings
 
 
 def search_similar_chunks(
-        db:Session,qustion:str,
-        document_id:int,
-        limit:int=5
-    ):
-
+    db: Session,
+    qustion: str,
+    document_id: int,
+    limit: int = 5
+):
     """
-    search the most similar chunks for a qustion.
+    Search the most similar chunks for a question.
     """
 
-    #genarte embedding for the qustion
+    # Generate embedding for the question
 
-    qustion_embedding=create_embeddings([qustion][0])
+    qustion_embedding = create_embeddings([qustion])[0]
 
-    sql=text(
+    sql = text(
         """
         SELECT
-          chunk_text
-        FROM
-        document_id=:document_id
-        ORDER BY 
-        embedding<=>:embedding
-        LIMIT:limit
-
+            chunk_text
+        FROM document_chunks
+        WHERE document_id = :document_id
+        ORDER BY embedding <=> CAST(:embedding AS vector)
+        LIMIT :limit
         """
     )
 
-    result=db.execute(
-        sql,{
-            "document_id":document_id,
-            "embedding":qustion_embedding
+    result = db.execute(
+        sql,
+        {
+            "document_id": document_id,
+            "embedding": str(qustion_embedding),
+            "limit": limit
         }
     )
 

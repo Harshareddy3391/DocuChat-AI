@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship,Session
 from sqlalchemy.sql import func
 from pgvector.sqlalchemy import Vector
 
 from app.db.database import Base
+
 
 
 class DocumentChunk(Base):
@@ -41,3 +42,27 @@ class DocumentChunk(Base):
         "Document",
         back_populates="chunks"
     )
+
+
+
+def search_similar_chunks(
+        db:Session,
+        query_embedding:list[float],
+        limit:int=5
+):
+
+    """
+    Search for the most similir documts chunks using pgvector cosine similarity
+    """
+
+    documents=(
+        db.query(DocumentChunk).order_by(
+            DocumentChunk.embedding.cosine_distance(
+                query_embedding
+            )
+        )
+        .limit(limit)
+        .all()
+    )
+
+    return documents
