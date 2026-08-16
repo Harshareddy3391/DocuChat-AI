@@ -42,8 +42,10 @@ def get_or_create_user(db: Session, google_user: GoogleUser) -> str:
     # Generate JWT for both existing and new users
     access_tocken = create_access_tocken(
         {
-            "sub": user.email,
-            "user_id": user.id,
+             "sub": user.email,
+                        "user_id": user.id,
+                        "name": user.name,
+                        "picture": user.picture
         }
     )
 

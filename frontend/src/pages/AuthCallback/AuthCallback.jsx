@@ -18,25 +18,55 @@ const AuthCallback = () => {
 
         const tocken = params.get("token");
 
-if (!tocken) {
+        if (!tocken) {
 
-    return;
+            return;
 
-}
+        }
 
-localStorage.setItem(
-    "access_token",
-    tocken
-);
+        localStorage.setItem(
+            "access_token",
+            tocken
+        );
 
-toast.success(
-    "Login successful."
-);
+        /*
+         * Decode JWT payload
+         * to get logged-in user's information.
+         */
+        try {
 
-navigate(
-    "/dashboard",
-    { replace: true }
-);
+            const payload = JSON.parse(
+                atob(
+                    tocken.split(".")[1]
+                )
+            );
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    name: payload.name,
+                    email: payload.sub,
+                    picture: payload.picture
+                })
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Failed to decode user information:",
+                error
+            );
+
+        }
+
+        toast.success(
+            "Login successful."
+        );
+
+        navigate(
+            "/dashboard",
+            { replace: true }
+        );
 
     }, [navigate]);
 

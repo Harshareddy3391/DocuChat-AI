@@ -1,5 +1,10 @@
 from openai import OpenAI
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+
 from app.core.config import settings
+from app.models.user_model import User
+from app.models.document_model import Document
 
 from app.services.search_service import search_similar_chunks
 
@@ -10,10 +15,27 @@ client = OpenAI(
 
 
 def chat_with_document(
-        db,
+        db: Session,
         document_id: int,
-        qustion: str
+        qustion: str,
+        current_user: User
 ):
+
+    # Check document belongs to current user
+    document = (
+        db.query(Document)
+        .filter(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found"
+        )
 
     context_chunks = search_similar_chunks(
         db=db,

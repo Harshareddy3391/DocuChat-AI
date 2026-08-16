@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   FaPaperPlane,
   FaRobot,
-  FaUser,
+  FaUserCircle,
   FaFilePdf,
 } from "react-icons/fa";
 
@@ -67,9 +67,7 @@ const Chat = () => {
 
   }, [messages]);
 
-  //PART 2
-
-    /* ===========================
+  /* ===========================
      FETCH DOCUMENTS
   =========================== */
 
@@ -81,11 +79,22 @@ const Chat = () => {
 
       const response = await getDocuments();
 
-      setDocuments(response.data);
+      /*
+       * Remove duplicate PDF filenames
+       */
+      const uniqueDocuments = response.data.filter(
+        (doc, index, self) =>
+          index ===
+          self.findIndex(
+            (item) => item.filename === doc.filename
+          )
+      );
 
-      if (response.data.length > 0) {
+      setDocuments(uniqueDocuments);
 
-        setSelectedDocument(response.data[0].id);
+      if (uniqueDocuments.length > 0) {
+
+        setSelectedDocument(uniqueDocuments[0].id);
 
       }
 
@@ -152,11 +161,8 @@ const Chat = () => {
       setSendingMessage(true);
 
       const response = await askQuestion(
-
         selectedDocument,
-
         currentQuestion
-
       );
 
       const aiMessage = {
@@ -200,9 +206,12 @@ const Chat = () => {
     }
 
   };
-  //part 3
 
-   return (
+  /* ===========================
+     UI
+  =========================== */
+
+  return (
 
     <div className="chat-page">
 
@@ -301,11 +310,8 @@ const Chat = () => {
           <span>
 
             {
-
               documents.find(
-
                 (doc) => doc.id === selectedDocument
-
               )?.filename ||
 
               "No document selected"
@@ -316,9 +322,7 @@ const Chat = () => {
 
         </div>
 
-
-            //part 4
-                {/* ===========================
+        {/* ===========================
             MESSAGES
         =========================== */}
 
@@ -339,7 +343,7 @@ const Chat = () => {
 
                 {message.role === "user"
 
-                  ? <FaUser />
+                  ? <FaUserCircle />
 
                   : <FaRobot />
 
@@ -399,11 +403,9 @@ const Chat = () => {
             onKeyDown={(e) => {
 
               if (
-
                 e.key === "Enter" &&
                 !sendingMessage &&
                 selectedDocument
-
               ) {
 
                 handleSend();

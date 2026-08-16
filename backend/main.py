@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 
+
+from app.api import chat
+
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -57,6 +60,7 @@ app.include_router(auth_router)
 app.include_router(user_router)
 
 app.include_router(dashboard_user)
+app.include_router(chat.router)
 
 
 # =========================
