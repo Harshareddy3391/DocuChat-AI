@@ -10,6 +10,7 @@ import {
   FaCloudUploadAlt,
   FaUserCircle,
   FaBars,
+  FaHome,
 } from "react-icons/fa";
 
 import {
@@ -20,7 +21,7 @@ import {
 const Dashboard = () => {
   const [stats, setStats] = useState([]);
   const [documents, setDocuments] = useState([]);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigate = useNavigate();
 
@@ -33,37 +34,61 @@ const Dashboard = () => {
       const statsData = await getDashboardStats();
       const documentsData = await getRecentDocuments();
 
-      setStats(statsData);
-      setDocuments(documentsData);
+      setStats(statsData || []);
+      setDocuments(documentsData || []);
     } catch (error) {
       console.error("Dashboard Error:", error);
     }
   };
 
+  /*
+   * Backend gives us title/value.
+   * Icons are added here on the frontend.
+   */
+  const getStatIcon = (title) => {
+    switch (title?.toLowerCase()) {
+      case "documents":
+        return <FaFileAlt />;
+
+      case "ai chats":
+        return <FaComments />;
+
+      case "storage":
+        return <FaDatabase />;
+
+      case "ai responses":
+        return <FaRobot />;
+
+      default:
+        return <FaFileAlt />;
+    }
+  };
+
+  /*
+   * If backend does not return statistics,
+   * show default values.
+   */
   const defaultStats = [
     {
       title: "Documents",
       value: 0,
-      icon: <FaFileAlt />,
     },
     {
       title: "AI Chats",
       value: 0,
-      icon: <FaComments />,
     },
     {
       title: "Storage",
       value: "0 MB",
-      icon: <FaDatabase />,
     },
     {
       title: "AI Responses",
       value: 0,
-      icon: <FaRobot />,
     },
   ];
 
-  const displayStats = stats.length ? stats : defaultStats;
+  const displayStats =
+    stats.length > 0 ? stats : defaultStats;
 
   return (
     <div className="dashboard">
@@ -71,15 +96,26 @@ const Dashboard = () => {
       {/* ================= SIDEBAR ================= */}
 
       <aside
-  className={`sidebar ${
-    sidebarOpen ? "sidebar-open" : "sidebar-closed"
-  }`}
->
+        className={`sidebar ${
+          sidebarOpen
+            ? "sidebar-open"
+            : "sidebar-closed"
+        }`}
+      >
+
+        {/* LOGO */}
 
         <div className="logo">
+
           <FaRobot />
-          <span>DocuChat AI</span>
+
+          <span>
+            DocuChat AI
+          </span>
+
         </div>
+
+        {/* MENU */}
 
         <ul>
 
@@ -87,31 +123,61 @@ const Dashboard = () => {
             className="active"
             onClick={() => navigate("/dashboard")}
           >
-            Dashboard
+
+            <FaHome />
+
+            <span>
+              Dashboard
+            </span>
+
           </li>
 
           <li
             onClick={() => navigate("/upload")}
           >
-            Upload
+
+            <FaCloudUploadAlt />
+
+            <span>
+              Upload
+            </span>
+
           </li>
 
           <li
             onClick={() => navigate("/documents")}
           >
-            Documents
+
+            <FaFileAlt />
+
+            <span>
+              Documents
+            </span>
+
           </li>
 
           <li
             onClick={() => navigate("/chat")}
           >
-            Chat
+
+            <FaComments />
+
+            <span>
+              Chat
+            </span>
+
           </li>
 
           <li
             onClick={() => navigate("/profile")}
           >
-            Profile
+
+            <FaUserCircle />
+
+            <span>
+              Profile
+            </span>
+
           </li>
 
         </ul>
@@ -127,17 +193,25 @@ const Dashboard = () => {
         <nav className="navbar">
 
           <div
-  className="menu"
-  onClick={() => setSidebarOpen(!sidebarOpen)}
->
-  <FaBars />
-</div>
+            className="menu"
+            onClick={() =>
+              setSidebarOpen(!sidebarOpen)
+            }
+          >
+
+            <FaBars />
+
+          </div>
 
           <div
             className="profile"
-            onClick={() => navigate("/profile")}
+            onClick={() =>
+              navigate("/profile")
+            }
           >
+
             <FaUserCircle size={35} />
+
           </div>
 
         </nav>
@@ -153,16 +227,22 @@ const Dashboard = () => {
             </h2>
 
             <p>
-              Manage your documents and chat with AI effortlessly.
+              Manage your documents and chat
+              with AI effortlessly.
             </p>
 
           </div>
 
           <button
-            onClick={() => navigate("/upload")}
+            onClick={() =>
+              navigate("/upload")
+            }
           >
+
             <FaCloudUploadAlt />
+
             Upload PDF
+
           </button>
 
         </section>
@@ -171,28 +251,34 @@ const Dashboard = () => {
 
         <section className="stats-grid">
 
-          {displayStats.map((item, index) => (
+          {displayStats.map(
+            (item, index) => (
 
-            <div
-              className="stat-card"
-              key={index}
-            >
+              <div
+                className="stat-card"
+                key={index}
+              >
 
-              <div className="icon">
-                {item.icon}
+                <div className="icon">
+
+                  {getStatIcon(
+                    item.title
+                  )}
+
+                </div>
+
+                <h3>
+                  {item.value ?? 0}
+                </h3>
+
+                <p>
+                  {item.title}
+                </p>
+
               </div>
 
-              <h3>
-                {item.value}
-              </h3>
-
-              <p>
-                {item.title}
-              </p>
-
-            </div>
-
-          ))}
+            )
+          )}
 
         </section>
 
@@ -213,8 +299,15 @@ const Dashboard = () => {
               <thead>
 
                 <tr>
-                  <th>Name</th>
-                  <th>Date</th>
+
+                  <th>
+                    Name
+                  </th>
+
+                  <th>
+                    Date
+                  </th>
+
                 </tr>
 
               </thead>
@@ -223,25 +316,31 @@ const Dashboard = () => {
 
                 {documents.length > 0 ? (
 
-                  documents.map((doc) => (
+                  documents.map(
+                    (doc) => (
 
-                    <tr key={doc.id}>
+                      <tr
+                        key={doc.id}
+                      >
 
-                      <td>
-                        {doc.filename}
-                      </td>
+                        <td>
+                          {doc.filename}
+                        </td>
 
-                      <td>
-                        {doc.uploaded_at
-                          ? new Date(
-                              doc.uploaded_at
-                            ).toLocaleDateString()
-                          : "N/A"}
-                      </td>
+                        <td>
 
-                    </tr>
+                          {doc.uploaded_at
+                            ? new Date(
+                                doc.uploaded_at
+                              ).toLocaleDateString()
+                            : "N/A"}
 
-                  ))
+                        </td>
+
+                      </tr>
+
+                    )
+                  )
 
                 ) : (
 
@@ -249,7 +348,10 @@ const Dashboard = () => {
 
                     <td
                       colSpan="2"
-                      style={{ textAlign: "center" }}
+                      style={{
+                        textAlign:
+                          "center",
+                      }}
                     >
                       No documents found.
                     </td>
