@@ -2,6 +2,7 @@ from openai import OpenAI
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+
 from app.core.config import settings
 from app.models.user_model import User
 from app.models.document_model import Document
