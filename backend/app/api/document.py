@@ -22,6 +22,8 @@ from app.models.user_model import User
 from app.schemas.document_schema import DocumentResponse
 from app.services.document_service import create_document,delete_document,get_documents
  
+from app.services.storage_service import genarate_signed_url
+
 # Create router
 router = APIRouter(
     prefix="/documents",
@@ -43,10 +45,18 @@ def upload_document(
     Upload a PDF document.
     """
 
-    return create_document(
+    doc = create_document(
         db=db,
         file=file,
         current_user=current_user
+    )
+
+    return DocumentResponse(
+        id=doc.id,
+        filename=doc.filename,
+        file_size=doc.file_size,
+        uploaded_at=doc.uploaded_at,
+        file_path=genarate_signed_url(doc.file_path)
     )
 
 
@@ -64,10 +74,21 @@ def get_all_documents(
     Get all documents uploaded by the current user.
     """
 
-    return get_documents(
+    docs = get_documents(
         db=db,
         current_user=current_user
     )
+
+    return [
+        DocumentResponse(
+            id=doc.id,
+            filename=doc.filename,
+            file_size=doc.file_size,
+            uploaded_at=doc.uploaded_at,
+            file_path=genarate_signed_url(doc.file_path)
+        )
+        for doc in docs
+    ]
 
 
 @router.delete("/{document_id}")

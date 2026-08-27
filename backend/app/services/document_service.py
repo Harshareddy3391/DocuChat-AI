@@ -27,56 +27,84 @@ def create_document(
     store document metadata and save vectors in PostgreSQL.
     """
 
-    # Upload PDF
-    uploaded_file = upload_pdf(
-        file=file,
-        user_id=current_user.id
-    )
+    uploaded_file = None
+    try:
+        # Upload PDF
+        uploaded_file = upload_pdf(
+            file=file,
+            user_id=current_user.id
+        )
 
-    # Extract text from PDF
-    text = extract_text(uploaded_file["file_bytes"])
+        # Extract text from PDF
+        text = extract_text(uploaded_file["file_bytes"])
 
-    # Split text into chunks
-    chunks = create_chunks(text)
+        if not text or not text.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The uploaded PDF contains no extractable text. Please verify it is a text-based, uncorrupted PDF."
+            )
 
-    # Generate embeddings
-    embeddings = create_embeddings(chunks)
+        # Split text into chunks
+        chunks = create_chunks(text)
 
-    print("=" * 50)
-    print(f"TOTAL CHUNKS : {len(chunks)}")
-    print("=" * 50)
+        # Generate embeddings
+        embeddings = create_embeddings(chunks)
 
-    for index, chunk in enumerate(chunks, start=1):
-        print(f"\nChunk {index}")
-        print("-" * 50)
-        print(chunk)
+        print("=" * 50)
+        print(f"TOTAL CHUNKS : {len(chunks)}")
+        print("=" * 50)
 
-    # Save document metadata
-    document = Document(
-    filename=uploaded_file["filename"],
-    file_path=uploaded_file["storage_path"],
-    file_size=uploaded_file["file_size"],
-    user_id=current_user.id
-)
+        for index, chunk in enumerate(chunks, start=1):
+            print(f"\nChunk {index}")
+            print("-" * 50)
+            print(chunk)
 
-    db.add(document)
-    db.commit()
-    db.refresh(document)
+        # Save document metadata
+        document = Document(
+            filename=uploaded_file["filename"],
+            file_path=uploaded_file["storage_path"],
+            file_size=uploaded_file["file_size"],
+            user_id=current_user.id
+        )
 
-    # Save chunks and embeddings
-    save_chunks(
-        db=db,
-        document_id=document.id,
-        chunks=chunks,
-        embeddings=embeddings
-    )
+        db.add(document)
+        db.commit()
+        db.refresh(document)
 
+        # Save chunks and embeddings
+        save_chunks(
+            db=db,
+            document_id=document.id,
+            chunks=chunks,
+            embeddings=embeddings
+        )
 
-    document.file_path = genarate_signed_url(
-    document.file_path
-)
+        return document
 
-    return document
+    except ValueError as val_err:
+        if uploaded_file:
+            try:
+                delete_pdf(uploaded_file["storage_path"])
+            except Exception as delete_err:
+                print(f"Failed to delete orphaned file after value error: {delete_err}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(val_err)
+        )
+    except Exception as e:
+        # Clean up uploaded PDF from storage to prevent orphaned files
+        if uploaded_file:
+            try:
+                delete_pdf(uploaded_file["storage_path"])
+            except Exception as delete_err:
+                print(f"Failed to delete orphaned file {uploaded_file['storage_path']} after error: {delete_err}")
+        
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process document: {str(e)}"
+        )
 
 def delete_document(
     db: Session,
@@ -136,11 +164,5 @@ def get_documents(
         .order_by(Document.uploaded_at.desc())
         .all()
     )
-
-    for document in documents:
-
-        document.file_path = genarate_signed_url(
-            document.file_path
-        )
 
     return documents

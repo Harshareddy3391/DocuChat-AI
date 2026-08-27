@@ -40,7 +40,7 @@ def upload_pdf(file: UploadFile, user_id: int) -> dict:
         file=file_bytes,
         file_options={
             "content-type": file.content_type,
-            "upsert": False
+            "upsert": "false"
         },
     )
 
